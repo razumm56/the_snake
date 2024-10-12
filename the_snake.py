@@ -1,5 +1,4 @@
 from random import choice, randint
-
 import pygame as pg
 
 # Константы для размеров поля и сетки:
@@ -52,20 +51,25 @@ class GameObject:
 
     def draw(self):
         """Метод переопределяется в дочерних классах."""
+        pass
 
 
 class Apple(GameObject):
     """Этот дочерний класс описывает поведение "яблока"."""
 
-    def __init__(self, occupied_cells=[SCREEN_CENTER], color=APPLE_COLOR):
+    def __init__(self, occupied_cells=None, color=APPLE_COLOR):
+        if occupied_cells is None:
+            occupied_cells = [SCREEN_CENTER]
         self.randomize_position(occupied_cells)
         super().__init__(self.position, color)
 
     def randomize_position(self, occupied_cells):
         """Этот метод вычисляет положение яблока на игровом поле (рандомно)."""
         while True:
-            self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                             randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+            self.position = (
+                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+            )
             if self.position not in occupied_cells:
                 break
 
@@ -81,6 +85,9 @@ class Snake(GameObject):
 
     def __init__(self, positions=SCREEN_CENTER, color=SNAKE_COLOR):
         super().__init__(positions, color)
+        self.positions = None
+        self.direction = None
+        self.length = None
         self.reset()
         self.next_direction = None
         self.last = None
@@ -92,15 +99,13 @@ class Snake(GameObject):
             self.next_direction = None
 
     def get_head_position(self):
-        """Метод возвращает кортеж,
-        который отрисовывается первым (голову).
-        """
+        """Метод возвращает кортеж, который отрисовывается первым (голову)."""
         return self.positions[0]
 
     def draw(self):
         """Метод отрисовывает змейку."""
         for position in self.positions[:-1]:
-            rect = (pg.Rect(position, (GRID_SIZE, GRID_SIZE)))
+            rect = pg.Rect(position, (GRID_SIZE, GRID_SIZE))
             pg.draw.rect(screen, self.body_color, rect)
             pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
@@ -122,8 +127,9 @@ class Snake(GameObject):
             self.positions.pop()
         dx, dy = head  # Распаковка кортежа/головы змейки
         dxr, dyr = self.direction  # Распаковка кортежа/направления
-        self.positions.insert(0, ((dx + dxr * GRID_SIZE) % SCREEN_WIDTH,
-                                  (dy + dyr * GRID_SIZE) % SCREEN_HEIGHT))
+        self.positions.insert(
+            0, ((dx + dxr * GRID_SIZE) % SCREEN_WIDTH, (dy + dyr * GRID_SIZE) % SCREEN_HEIGHT)
+        )
 
     def reset(self):
         """Метод, который сбрасывает параметры змейки."""
