@@ -128,7 +128,8 @@ class Snake(GameObject):
         dx, dy = head  # Распаковка кортежа/головы змейки
         dxr, dyr = self.direction  # Распаковка кортежа/направления
         self.positions.insert(
-            0, ((dx + dxr * GRID_SIZE) % SCREEN_WIDTH, (dy + dyr * GRID_SIZE) % SCREEN_HEIGHT)
+            0, ((dx + dxr * GRID_SIZE) % SCREEN_WIDTH,
+                (dy + dyr * GRID_SIZE) % SCREEN_HEIGHT)
         )
 
     def reset(self):
